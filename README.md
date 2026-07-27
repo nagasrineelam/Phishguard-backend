@@ -143,27 +143,4 @@ immediately (for user feedback) **and** queues it for admin verification.
 - `POST /admin/retrain` — reruns `train.py` as a blocking subprocess
   (**illustrative only** — see caveats below)
 
-## Known limitations / things to verify yourself
 
-1. **Feature extraction from a raw URL isn't automated end-to-end.**
-   `/predict` and `/report` expect you to already have the ~30
-   PhiUSIIL-style feature values for a URL (`URLSimilarityIndex`,
-   `NoOfSubDomain`, `HasFavicon`, etc.). About a third of these
-   (favicon checks, iframe/popup counts, redirect resolution, form
-   field detection...) require fetching and parsing the live page —
-   that's a separate scraping component (requests + BeautifulSoup) not
-   included here. If you need "just paste a URL," build that
-   extractor and call it before hitting `/predict`.
-2. **`/admin/retrain` is a manual, blocking trigger**, not production
-   automation — no job queue, no hot model reload (restart the process
-   after retraining), and it doesn't merge `retrain_dataset.csv` back
-   into the source dataset for you.
-3. **Admin auth is a placeholder** (single static token via header).
-   Replace with real auth before exposing these endpoints publicly.
-4. **Label mapping**: double-check the assertion output when you first
-   run `train.py` — get this wrong and every prediction is inverted.
-5. Hyperparameters not stated in the source paper (tokenizer scheme,
-   batch size, learning rate, vocab size, max URL length) are set to
-   reasonable defaults in `core/config.py`, not values taken from the
-   paper. Don't expect the paper's reported 99.8% accuracy without
-   your own tuning pass.
